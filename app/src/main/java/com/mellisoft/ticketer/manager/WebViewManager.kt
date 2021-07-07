@@ -24,6 +24,9 @@ object WebViewManager {
     @SuppressLint("SetJavaScriptEnabled")
     private fun initialize() {
         Log.d(TAG, "initialize with path: ${BuildConfig.WEBVIEW_PATH}")
+
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+
         if (this.webView != null) {
             this.webView!!.settings.apply {
                 javaScriptEnabled = true
@@ -44,6 +47,7 @@ object WebViewManager {
         return object: WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 this@WebViewManager.onPageFinished?.onResult(null)
+                view?.loadUrl("javascript:document.body.setAttribute('data-is-ticketer-app', '1')")
                 super.onPageFinished(view, url)
             }
 
