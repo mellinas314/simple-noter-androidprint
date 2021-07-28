@@ -2,6 +2,7 @@ package com.mellisoft.ticketer.manager
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -11,6 +12,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.mellisoft.ticketer.BuildConfig
 import com.mellisoft.ticketer.helper.Callback
+import com.mellisoft.ticketer.helper.JavascriptInterface
 
 private const val TAG = "WebViewManager"
 
@@ -22,7 +24,7 @@ object WebViewManager {
 
     //region private initialization
     @SuppressLint("SetJavaScriptEnabled")
-    private fun initialize() {
+    private fun initialize(context: Context) {
         Log.d(TAG, "initialize with path: ${BuildConfig.WEBVIEW_PATH}")
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
@@ -33,14 +35,15 @@ object WebViewManager {
                 domStorageEnabled = true
             }
             this.webView!!.loadUrl(BuildConfig.WEBVIEW_PATH)
+            this.webView!!.addJavascriptInterface(JavascriptInterface(context), "NativePrint")
         }
     }
     //endregion
 
-    fun initWebView(webView: WebView) {
+    fun initWebView(webView: WebView, context: Context) {
         Log.d(TAG, "initWebView")
         this.webView = webView
-        this.initialize()
+        this.initialize(context)
     }
 
     fun getWebViewClient(): WebViewClient {

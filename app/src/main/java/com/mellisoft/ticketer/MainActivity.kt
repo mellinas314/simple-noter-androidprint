@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         }
         WebViewManager.mainActivity = this
         this.appWebView.webViewClient = WebViewManager.getWebViewClient()
-        WebViewManager.initWebView(this.appWebView)
+        WebViewManager.initWebView(this.appWebView, this)
     }
 
     private fun showLoading() {

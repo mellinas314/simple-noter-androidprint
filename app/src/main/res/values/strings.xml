@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Ticketer</string>
+    <string name="print_task_title">Confirmar</string>
+    <string name="print_task_body">Va a imprimir el ticket &lt;b>\"%1$s\"&lt;/b>. ¿Desea continuar?</string>
+    <string name="confirm">Continuar</string>
+    <string name="cancel">Cancelar</string>
 </resources>
