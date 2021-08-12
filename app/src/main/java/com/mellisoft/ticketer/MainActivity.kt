@@ -38,6 +38,10 @@ class MainActivity : AppCompatActivity() {
         WebViewManager.initWebView(this.appWebView, this)
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
     fun ignore(view: View) {
         Log.d(TAG, "Ignore click")
     }

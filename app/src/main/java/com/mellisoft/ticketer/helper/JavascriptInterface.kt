@@ -35,21 +35,30 @@ class JavascriptInterface(private val context: MainActivity): ResultReceiver {
         } else {
             Html.fromHtml(String.format(context.resources.getString(R.string.print_task_body), taskObj.title))
         }
-        MaterialAlertDialogBuilder(context)
+        Log.d(TAG, "Print task: " + taskObj)
+        val builder = MaterialAlertDialogBuilder(context)
             .setTitle(context.resources.getString(R.string.print_task_title))
             .setMessage(text)
             .setCancelable(false)
-            .setNegativeButton(context.resources.getString(R.string.cancel)
+            .setNeutralButton(context.resources.getString(R.string.cancel)
             ) { dialog, _ -> dialog?.dismiss() }
-            .setPositiveButton(context.resources.getString(R.string.confirm)
+            .setPositiveButton(context.resources.getString(R.string.confirm_cierre)
             ) { dialog, _ ->
                 dialog?.dismiss()
                 internalPrintTask(taskObj)
             }
-            .show()
+        if(taskObj.type == "REPARACION") {
+            builder.setNegativeButton(context.resources.getString(R.string.confirm_recogida)
+            ) { dialog, _ ->
+                dialog?.dismiss()
+                internalPrintRecogidaTask(taskObj)
+            }
+        }
+        builder.show()
     }
 
     private var pendingTask : DataTask? = null
+    private var pendingRecogidaTask : DataTask? = null
     private fun internalPrintTask(task: DataTask) {
         //Si hay ya conexión, no la creamos
         if(!context.getPrinterManager().isConnected) {
@@ -58,6 +67,17 @@ class JavascriptInterface(private val context: MainActivity): ResultReceiver {
             connectBT()
         }else {
             launchPrint(task)
+        }
+    }
+
+    private fun internalPrintRecogidaTask(task: DataTask) {
+        //Si hay ya conexión, no la creamos
+        if(!context.getPrinterManager().isConnected) {
+            Log.d(TAG, "NOT connected")
+            pendingRecogidaTask = task
+            connectBT()
+        }else {
+            launchPrintRecogida(task)
         }
     }
 
@@ -134,12 +154,50 @@ class JavascriptInterface(private val context: MainActivity): ResultReceiver {
         printer.executeCommand(true)
     }
 
+    private fun launchPrintRecogida(task: DataTask) {
+        //Imprimimos el nombre
+        val separator = "--------------------------------"
+        val printer = context.getPrinterManager()
+        val cal = Calendar.getInstance()
+        val sdf = SimpleDateFormat(
+            "yyyy-MM-dd HH:mm:ss",
+            Locale.getDefault()
+        )
+        val time = sdf.format(cal.time)
+        val ticketTime = sdf.format(task.date)
+        printer.printText("PCSoft Reparaciones", UcomPrinterManager.FontStyle.DOUBLE_HEIGHT or UcomPrinterManager.FontStyle.BOLD)
+        printer.writeln(2)
+        printer.printText("CIF: 23285246T", UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+        printer.printText("Tlf: 658528409", UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+        printer.printText(time, UcomPrinterManager.Align.RIGHT, UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+        printer.printText("F. Ticket: $ticketTime")
+        printer.writeln()
+        printer.printText("Ticket: ${task.id}")
+        printer.writeln()
+        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+        printer.printText(task.description, UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+        printer.printText("Total: ${DecimalFormat("#.##").format(task.total)} Euros", UcomPrinterManager.Align.RIGHT,
+            UcomPrinterManager.FontStyle.DOUBLE_HEIGHT or UcomPrinterManager.FontStyle.BOLD )
+        printer.writeln(6)
+        printer.paperCut()
+        printer.executeCommand(true)
+    }
+
     private fun printMessage(message: String, title: String = "") {
         MaterialAlertDialogBuilder(context)
             .setTitle(title)
             .setMessage(message)
             .setCancelable(false)
-            .setPositiveButton(context.resources.getString(R.string.confirm)
+            .setPositiveButton(context.resources.getString(R.string.close)
             ) { dialog, _ ->
                 dialog?.dismiss()
             }
@@ -158,6 +216,11 @@ class JavascriptInterface(private val context: MainActivity): ResultReceiver {
                 launchPrint(pendingTask!!)
                 pendingTask = null
             }
+        }else if(pendingRecogidaTask != null) {
+            GlobalScope.launch {
+                launchPrintRecogida(pendingRecogidaTask!!)
+                pendingRecogidaTask = null
+            }
         }
         context.hideLoading()
     }
@@ -168,6 +231,7 @@ private class DataTask(json: JSONObject) {
 
     val title: String = json.getString("title")
     val description: String = json.getString("description")
+    val operation: String = json.getString("operation")
     val id: String? = json.optString("id", "")
     val clientName: String = json.getString("clientName")
     val total: Double = json.getDouble("total")
@@ -180,6 +244,7 @@ private class DataTask(json: JSONObject) {
                 "clientName: $clientName\n" +
                 "title: $title \n" +
                 "description: $description\n" +
+                "operation: $operation\n" +
                 "id: $id\n" +
                 "total: $total\n" +
                 "date: $date\n" +
