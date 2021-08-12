@@ -3,6 +3,7 @@ package com.mellisoft.ticketer.helper
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.DialogInterface
+import android.graphics.fonts.FontStyle
 import android.os.Build
 import android.text.Html
 import android.util.Log
@@ -156,22 +157,24 @@ class JavascriptInterface(private val context: MainActivity): ResultReceiver {
             //Bloque cliente
             printer.printText("N. orden: ${task.id}", UcomPrinterManager.FontStyle.NORMAL)
             printer.writeln()
-            printer.printText("F. recogida: $ticketTime", UcomPrinterManager.FontStyle.NORMAL)
+            printer.printText("F. recogida: ", UcomPrinterManager.FontStyle.NORMAL)
+            printer.printText(ticketTime, UcomPrinterManager.FontStyle.NORMAL)
             printer.writeln()
             printer.printText("Cliente: ${task.title}", UcomPrinterManager.FontStyle.NORMAL)
             printer.writeln()
             printSeparator()
             //Bloque datos recogida
-            printer.printText("PRODUCTOS A RETIRAR/REPARAR Y MOTIVO:", UcomPrinterManager.FontStyle.BOLD)
-            printer.writeln()
+            printer.printText("PRODUCTOS A REVISAR Y MOTIVO:", UcomPrinterManager.FontStyle.BOLD)
+            printer.writeln(2)
             printer.printText(task.description, UcomPrinterManager.FontStyle.NORMAL)
             printer.writeln()
             printSeparator()
             //Bloque entrega y reparación
-            printer.printText("F. entrega: $currentTime", UcomPrinterManager.FontStyle.NORMAL)
+            printer.printText("F. entrega: ", UcomPrinterManager.FontStyle.BOLD or UcomPrinterManager.FontStyle.NORMAL)
+            printer.printText(currentTime, UcomPrinterManager.FontStyle.NORMAL)
             printer.writeln()
-            printer.printText("DESCRIPCION REPARACIONES REALIZADAS:", UcomPrinterManager.FontStyle.BOLD)
-            printer.writeln()
+            printer.printText("REPARACIONES REALIZADAS:", UcomPrinterManager.FontStyle.BOLD)
+            printer.writeln(2)
             printer.printText(task.operation, UcomPrinterManager.FontStyle.NORMAL)
             printer.writeln()
             printSeparator()
@@ -215,15 +218,16 @@ class JavascriptInterface(private val context: MainActivity): ResultReceiver {
         //Bloque cliente
         printer.printText("N. orden: ${task.id}", UcomPrinterManager.FontStyle.NORMAL)
         printer.writeln()
-        printer.printText("F. recogida: $ticketTime", UcomPrinterManager.FontStyle.NORMAL)
+        printer.printText("F. recogida: ", UcomPrinterManager.FontStyle.NORMAL)
+        printer.printText(ticketTime, UcomPrinterManager.FontStyle.NORMAL)
         printer.writeln()
         printer.printText("Cliente: ${task.title}", UcomPrinterManager.FontStyle.NORMAL)
         printer.writeln()
         printSeparator()
 
         //Bloque datos recogida
-        printer.printText("PRODUCTOS A RETIRAR/REPARAR Y MOTIVO:", UcomPrinterManager.FontStyle.BOLD)
-        printer.writeln()
+        printer.printText("PRODUCTOS A REVISAR Y MOTIVO:", UcomPrinterManager.FontStyle.BOLD)
+        printer.writeln(2)
         printer.printText(task.description, UcomPrinterManager.FontStyle.NORMAL)
         printer.writeln(6)
         printer.paperCut()
