@@ -2,15 +2,14 @@ package com.mellisoft.ticketer.manager
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.mellisoft.ticketer.BuildConfig
+import com.mellisoft.ticketer.MainActivity
 import com.mellisoft.ticketer.helper.Callback
 import com.mellisoft.ticketer.helper.JavascriptInterface
 
@@ -24,7 +23,7 @@ object WebViewManager {
 
     //region private initialization
     @SuppressLint("SetJavaScriptEnabled")
-    private fun initialize(context: Context) {
+    private fun initialize(context: MainActivity) {
         Log.d(TAG, "initialize with path: ${BuildConfig.WEBVIEW_PATH}")
 
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
@@ -40,7 +39,7 @@ object WebViewManager {
     }
     //endregion
 
-    fun initWebView(webView: WebView, context: Context) {
+    fun initWebView(webView: WebView, context: MainActivity) {
         Log.d(TAG, "initWebView")
         this.webView = webView
         this.initialize(context)

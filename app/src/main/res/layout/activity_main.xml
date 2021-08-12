@@ -11,15 +11,19 @@
         android:id="@+id/main_webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
+    <LinearLayout
         android:id="@+id/loading_indicator"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:indeterminate="true"
-        android:layout_width="60dp"
-        android:layout_height="60dp" />
+        android:layout_width="match_parent"
+        android:background="#11000000"
+        android:elevation="200dp"
+        android:onClick="ignore"
+        android:gravity="center"
+        android:layout_height="match_parent">
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:indeterminate="true"
+            android:layout_gravity="center"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,4 +4,5 @@
     <string name="print_task_body">Va a imprimir el ticket &lt;b>\"%1$s\"&lt;/b>. ¿Desea continuar?</string>
     <string name="confirm">Continuar</string>
     <string name="cancel">Cancelar</string>
+    <string name="select_bt_title">Selecciona tu impresora</string>
 </resources>

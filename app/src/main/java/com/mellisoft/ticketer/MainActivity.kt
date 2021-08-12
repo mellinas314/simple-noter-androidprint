@@ -4,19 +4,25 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import com.mellisoft.ticketer.helper.Callback
+import com.mellisoft.ticketer.helper.JavascriptInterface
 import com.mellisoft.ticketer.manager.WebViewManager
+import hk.ucom.printer.UcomPrinterManager
 
 private const val TAG = "MMainActivity"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appWebView: WebView
+    private lateinit var mPrinterManager: UcomPrinterManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mPrinterManager = UcomPrinterManager(UcomPrinterManager.PrinterModel.PU808USE)
+        mPrinterManager.setManualSocketClose(true)
 
         this.appWebView = findViewById(R.id.main_webview)
         this.showLoading()
@@ -32,11 +38,28 @@ class MainActivity : AppCompatActivity() {
         WebViewManager.initWebView(this.appWebView, this)
     }
 
-    private fun showLoading() {
-        findViewById<View>(R.id.loading_indicator).visibility = View.VISIBLE
+    fun ignore(view: View) {
+        Log.d(TAG, "Ignore click")
     }
 
-    private fun hideLoading() {
-        findViewById<View>(R.id.loading_indicator).visibility = View.GONE
+    fun showLoading() {
+        runOnUiThread {
+            findViewById<View>(R.id.loading_indicator).visibility = View.VISIBLE
+        }
+    }
+
+    fun hideLoading() {
+        runOnUiThread {
+            findViewById<View>(R.id.loading_indicator).visibility = View.GONE
+        }
+    }
+
+    fun getPrinterManager(): UcomPrinterManager {
+        return mPrinterManager;
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mPrinterManager.closeConnection()
     }
 }
