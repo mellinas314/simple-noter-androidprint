@@ -116,6 +116,27 @@ class JavascriptInterface(private val context: MainActivity): ResultReceiver {
         context.getPrinterManager().executeCommand(false)
     }
 
+    private fun printSeparator() {
+        val separator = "--------------------------------"
+        val printer = context.getPrinterManager()
+        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+    }
+
+    private fun printHeader() {
+        val printer = context.getPrinterManager()
+        printer.printText("PCSoft Reparaciones", UcomPrinterManager.FontStyle.DOUBLE_HEIGHT or UcomPrinterManager.FontStyle.BOLD)
+        printer.writeln()
+        printer.printText("Informatica a domicilio", UcomPrinterManager.FontStyle.BOLD)
+        printer.writeln(2)
+        printer.printText("Web: www.pcsoftreparaciones.com", UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+        printer.printText("Mail: sat@pcsoftreparaciones.com", UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+        printer.printText("Tel: 658528409", UcomPrinterManager.FontStyle.NORMAL)
+        printer.writeln()
+    }
+
     private fun launchPrint(task: DataTask) {
         //Imprimimos el nombre
         val separator = "--------------------------------"
@@ -125,31 +146,52 @@ class JavascriptInterface(private val context: MainActivity): ResultReceiver {
             "yyyy-MM-dd HH:mm:ss",
             Locale.getDefault()
         )
-        val time = sdf.format(cal.time)
+        val currentTime = sdf.format(cal.time)
         val ticketTime = sdf.format(task.date)
-        printer.printText("PCSoft Reparaciones", UcomPrinterManager.FontStyle.DOUBLE_HEIGHT or UcomPrinterManager.FontStyle.BOLD)
-        printer.writeln(2)
-        printer.printText("CIF: 23285246T", UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText("Tlf: 658528409", UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText(time, UcomPrinterManager.Align.RIGHT, UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText("F. Ticket: $ticketTime")
-        printer.writeln()
-        printer.printText("Ticket: ${task.id}")
-        printer.writeln()
-        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText(task.description, UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText("Total: ${DecimalFormat("#.##").format(task.total)} Euros", UcomPrinterManager.Align.RIGHT,
+        printHeader()
+        printSeparator()
+
+        //Si es reparación, imprimos el bloque de motivo
+        if(task.type == "REPARACION") {
+            //Bloque cliente
+            printer.printText("N. orden: ${task.id}", UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printer.printText("F. recogida: $ticketTime", UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printer.printText("Cliente: ${task.title}", UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printSeparator()
+            //Bloque datos recogida
+            printer.printText("PRODUCTOS A RETIRAR/REPARAR Y MOTIVO:", UcomPrinterManager.FontStyle.BOLD)
+            printer.writeln()
+            printer.printText(task.description, UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printSeparator()
+            //Bloque entrega y reparación
+            printer.printText("F. entrega: $currentTime", UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printer.printText("DESCRIPCION REPARACIONES REALIZADAS:", UcomPrinterManager.FontStyle.BOLD)
+            printer.writeln()
+            printer.printText(task.operation, UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printSeparator()
+        }else {
+            //Bloque cliente
+            printer.printText("N. venta: ${task.id}", UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printer.printText("F. venta: $ticketTime", UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printer.printText("Cliente: ${task.title}", UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printSeparator()
+            //Bloque datos venta
+            printer.printText(task.description, UcomPrinterManager.FontStyle.NORMAL)
+            printer.writeln()
+            printSeparator()
+        }
+        printer.printText("Total: ${task.total} Euros", UcomPrinterManager.Align.RIGHT,
             UcomPrinterManager.FontStyle.DOUBLE_HEIGHT or UcomPrinterManager.FontStyle.BOLD )
-        printer.writeln(6)
+        printer.writeln(5)
         printer.paperCut()
         printer.executeCommand(true)
     }
@@ -165,28 +207,24 @@ class JavascriptInterface(private val context: MainActivity): ResultReceiver {
         )
         val time = sdf.format(cal.time)
         val ticketTime = sdf.format(task.date)
-        printer.printText("PCSoft Reparaciones", UcomPrinterManager.FontStyle.DOUBLE_HEIGHT or UcomPrinterManager.FontStyle.BOLD)
-        printer.writeln(2)
-        printer.printText("CIF: 23285246T", UcomPrinterManager.FontStyle.NORMAL)
+
+        //Bloque cabecera
+        printHeader()
+        printSeparator()
+
+        //Bloque cliente
+        printer.printText("N. orden: ${task.id}", UcomPrinterManager.FontStyle.NORMAL)
         printer.writeln()
-        printer.printText("Tlf: 658528409", UcomPrinterManager.FontStyle.NORMAL)
+        printer.printText("F. recogida: $ticketTime", UcomPrinterManager.FontStyle.NORMAL)
         printer.writeln()
-        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
+        printer.printText("Cliente: ${task.title}", UcomPrinterManager.FontStyle.NORMAL)
         printer.writeln()
-        printer.printText(time, UcomPrinterManager.Align.RIGHT, UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText("F. Ticket: $ticketTime")
-        printer.writeln()
-        printer.printText("Ticket: ${task.id}")
-        printer.writeln()
-        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
+        printSeparator()
+
+        //Bloque datos recogida
+        printer.printText("PRODUCTOS A RETIRAR/REPARAR Y MOTIVO:", UcomPrinterManager.FontStyle.BOLD)
         printer.writeln()
         printer.printText(task.description, UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText(separator, UcomPrinterManager.FontStyle.NORMAL)
-        printer.writeln()
-        printer.printText("Total: ${DecimalFormat("#.##").format(task.total)} Euros", UcomPrinterManager.Align.RIGHT,
-            UcomPrinterManager.FontStyle.DOUBLE_HEIGHT or UcomPrinterManager.FontStyle.BOLD )
         printer.writeln(6)
         printer.paperCut()
         printer.executeCommand(true)
